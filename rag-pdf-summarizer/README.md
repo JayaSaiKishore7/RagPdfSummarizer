@@ -31,7 +31,7 @@ An AI-powered Retrieval-Augmented Generation (RAG) application that allows users
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/JayaSaiKishore7/rag-pdf-summarizer
+git clone https://github.com/JayaSaiKishore7/RagPdfSummarizer
 cd rag_application
 ```
 
