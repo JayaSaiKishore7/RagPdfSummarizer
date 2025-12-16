@@ -118,7 +118,7 @@ def create_vector_store(text_chunks: List[str], collection_name: str):
         
         # Store in session-specific dictionary
         vector_stores[session['user_id']] = vector_store
-        
+        # vector_stores[session['user_id']] = vector_store
         return vector_store
 
 def get_relevant_chunks(query: str, vector_store) -> List[str]:
