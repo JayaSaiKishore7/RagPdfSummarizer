@@ -78,6 +78,8 @@ def get_session_folder() -> str:
     """Get or create unique folder for this session"""
     if 'user_id' not in session:
         session['user_id'] = str(uuid.uuid4())
+       ## if 'user_id' in session:
+       ## session['user_id'] = str(uuid.uuid4())
     
     session_folder = os.path.join(app.config['VECTOR_FOLDER'], session['user_id'])
     os.makedirs(session_folder, exist_ok=True)
