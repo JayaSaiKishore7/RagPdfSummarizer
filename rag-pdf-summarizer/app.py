@@ -56,7 +56,7 @@ def get_ai_response(prompt):
 
 ## def get_ai_response(prompt):
    ## response = model.generate_content(prompt)
-    return response.text
+    ## return response.text
 
 def process_pdf(pdf_path: str) -> str:
     # Validate PDF before processing
