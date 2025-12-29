@@ -17,7 +17,7 @@ An AI-powered Retrieval-Augmented Generation (RAG) application that allows users
 
 ## 🧰 Tech Stack
 
-- **Python 3.8+*
+- **Python 3.8+**
 - **Flask** (for web server and routing)
 - **LangChain** (for chaining document retriever + LLM)
 - **Vector DB:** FAISS (can be extended to Pinecone, ChromaDB, etc.)
