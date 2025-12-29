@@ -11,7 +11,7 @@ from langchain.vectorstores import Chroma
 from typing import List, Dict
 from flask import Flask, render_template, request, session, abort
 from werkzeug.utils import secure_filename
-import mimetype
+import mimetypes
 
 load_dotenv()
 
