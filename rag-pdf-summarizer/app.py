@@ -29,7 +29,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['VECTOR_FOLDER'], exist_ok=True)
 
-# Dictionary to track vector stores per sessio
+# Dictionary to track vector stores per session
 vector_stores = {}
 
 # Initialize embeddings model once for reuse
