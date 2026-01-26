@@ -27,7 +27,7 @@ An AI-powered Retrieval-Augmented Generation (RAG) application that allows users
 
 ---
 
-## Installation
+## Installations
 
 1. Clone this repository:
 ```bash
