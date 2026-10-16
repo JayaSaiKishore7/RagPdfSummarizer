@@ -97,8 +97,7 @@ python app.py
 
 ## Limitations
 
-- **One document per session:** a session keeps the vector store of the first PDF it uploads. Uploading a
-  second PDF in the same session does not replace it, so questions are still answered from the first one.
-  Start a new browser session to work with another document.
+- **One document at a time:** uploading a new PDF replaces the previous one in your session, so questions are
+  always answered from the most recent upload.
 - Text is extracted with pypdf only, so scanned PDFs (images without a text layer) yield no content.
 - Vector stores are kept in memory and on disk per session and are not cleaned up automatically.

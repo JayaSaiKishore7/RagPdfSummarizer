@@ -35,9 +35,6 @@ vector_stores = {}
 # Initialize embeddings model once for reuse
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-# Dictionary to store hashed documents to avoid re-embedding
-document_hashes = {}
-
 def allowed_file(filename):
     """Check if the file has an allowed extension"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -94,38 +91,38 @@ def hash_document(text_chunk):
     return hashlib.md5(text_chunk.encode()).hexdigest()
 
 def create_vector_store(text_chunks: List[str], collection_name: str):
-    """Create vector store in user-specific directory with hashing for efficiency"""
+    """Create a vector store for the session's latest document, replacing any previous one"""
     session_folder = get_session_folder()
-    
+
     # Generate a unique collection name for this session
     session_collection = f"{session['user_id']}_{collection_name}"
-    
-    # Check if this collection already exists for this session
-    if session['user_id'] in vector_stores:
-        # Return existing vector store
-        return vector_stores[session['user_id']]
-    else:
-        # Hash the documents to avoid re-embedding duplicates
-        unique_chunks = []
-        for chunk in text_chunks:
-            chunk_hash = hash_document(chunk)
-            if chunk_hash not in document_hashes:
-                unique_chunks.append(chunk)
-                document_hashes[chunk_hash] = True
-        
-        # Create new vector store with the specified collection name
-        vector_store = Chroma.from_texts(
-            texts=unique_chunks if unique_chunks else text_chunks,
-            embedding=embeddings,  # Reuse the global embeddings object
-            persist_directory=session_folder,
-            collection_name=session_collection
-        )
-        vector_store.persist()
-        
-        # Store in session-specific dictionary
-        vector_stores[session['user_id']] = vector_store
-        # vector_stores[session['user_id']] = vector_store
-        return vector_store
+
+    # A new upload replaces the session's previous document
+    old_store = vector_stores.pop(session['user_id'], None)
+    if old_store is not None:
+        old_store.delete_collection()
+
+    # Hash the chunks to avoid embedding duplicates within this document
+    seen_hashes = set()
+    unique_chunks = []
+    for chunk in text_chunks:
+        chunk_hash = hash_document(chunk)
+        if chunk_hash not in seen_hashes:
+            unique_chunks.append(chunk)
+            seen_hashes.add(chunk_hash)
+
+    # Create new vector store with the specified collection name
+    vector_store = Chroma.from_texts(
+        texts=unique_chunks,
+        embedding=embeddings,  # Reuse the global embeddings object
+        persist_directory=session_folder,
+        collection_name=session_collection
+    )
+    vector_store.persist()
+
+    # Store in session-specific dictionary
+    vector_stores[session['user_id']] = vector_store
+    return vector_store
 
 def get_relevant_chunks(query: str, vector_store) -> List[str]:
 
@@ -188,7 +185,7 @@ def index():
         files = os.listdir(user_upload_folder)
         if files:
             # Get the most recently uploaded file
-            uploaded_filename = files[-1]
+            uploaded_filename = max(files, key=lambda f: os.path.getmtime(os.path.join(user_upload_folder, f)))
     
     if request.method == 'POST':
         if 'file' in request.files:
